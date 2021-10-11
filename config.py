@@ -2,9 +2,14 @@ import os
 
 
 __conf = {
-    'logs_dir': os.path.join(os.path.dirname(__file__), 'logs'),
+    # Configuracoes de acesso
+    "canvas_token": os.environ.get("CANVAS_TOKEN", ""),
+    "telegram_token": os.environ.get("TELEGRAM_TOKEN", ""),
 
-    'main_log_level': 'INFO',  # main log level
+    # Logs
+    'logs_dir': os.path.join(os.path.dirname(__file__), 'logs'),
+    'main_log_level': 'INFO',
+    'cache_log_level': 'INFO',
 
     # Disciplinas a serem ignoradas
     "ignorar_disciplinas": [
@@ -15,8 +20,7 @@ __conf = {
 
     # Cache
     'cache_refresh_interval_minutes': 15,  # Tempo em minutos entre updates
-    'cache_json_file': os.path.join(os.path.dirname(__file__), 'cache', 'tarefas.json'),
-    'cache_log_level': 'INFO',
+    'cache_dir': os.path.join(os.path.dirname(__file__), 'cache'),
 
     # Notifica quando uma tarefa estiver proxima
     "notificar": True,
@@ -29,9 +33,6 @@ __conf = {
     # Numero de tarefas a serem exibidas no comando /proximas
     "proximas_tarefas": 3,
 
-    # Configuracoes de acesso
-    "canvas_token": os.environ.get("CANVAS_TOKEN", ""),
-    "telegram_token": os.environ.get("TELEGRAM_TOKEN", ""),
 }
 
 # Configuracoes que podem ser modificadas
