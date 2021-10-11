@@ -115,31 +115,37 @@ def last_update():
     return _last_update
 
 
-def get_assignments() -> list:
+def get_assignments(filter=None, as_dict=False) -> list:
     """
     Retorna lista de assignments.
     """
     if _deve_atualizar():
         _update()
-    return _assignments
+    if as_dict:
+        return {a.id: a for a in _assignments if filter is None or filter(a)}
+    return [a for a in _assignments if filter is None or filter(a)]
 
 
-def get_quizzes() -> list:
+def get_quizzes(filter=None, as_dict=False) -> list:
     """
     Retorna lista de assignments.
     """
     if _deve_atualizar():
         _update()
-    return _quizzes
+    if as_dict:
+        return {q.id: q for q in _quizzes if filter is None or filter(q)}
+    return [q for q in _quizzes if filter is None or filter(q)]
 
 
-def get_courses() -> list:
+def get_courses(filter=None, as_dict=False) -> list:
     """
     Retorna lista de assignments.
     """
     if _deve_atualizar():
         _update()
-    return _courses
+    if as_dict:
+        return {c.id: c for c in _courses if filter is None or filter(c)}
+    return [c for c in _courses if filter is None or filter(c)]
 
 
 def init():
