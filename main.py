@@ -3,6 +3,7 @@ from threading import Timer
 import telegram_bot
 import config
 import cache
+import api
 
 
 _log = LoggerFactory.get_default_logger(__name__)
@@ -21,8 +22,12 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    quizzes = cache.get_quizzes()
-    assigns = cache.get_assignments()
-    for t in quizzes + assigns:
-        print(t)
+    # main()
+    prox = api.proximas()
+    for c, p in prox:
+        name = getattr(p, 'name', None)
+        name = getattr(p, 'title', name)
+        name = name.title().strip()
+        data = p.due_at_date.astimezone()
+        c = c.title().split('-')[0].strip()
+        print(data.strftime('%d/%m/%Y %H:%M'), '::', c, '::', name)
