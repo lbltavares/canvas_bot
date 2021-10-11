@@ -12,7 +12,7 @@ _log.setLevel(config.get('main_log_level', 'INFO'))
 def schedule_cache_update():
     _log.info('Agendando atualizacao do cache')
     secs = config.get('cache_refresh_interval_minutes', 15) * 60
-    Timer(20, cache.update).start()
+    Timer(secs, cache.update).start()
 
 
 def main():
