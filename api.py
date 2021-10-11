@@ -7,11 +7,7 @@ def calendario():
 
 
 def proximas(limit=1):
-    quizzes = cache.get_quizzes()
-    assigns = cache.get_assignments()
-    for t in quizzes + assigns:
-        print(t)
-    return t
+    return []
 
 
 def all():

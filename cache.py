@@ -57,20 +57,21 @@ def _update():
     # Escreve os arquivos de cache
     _create_cache_dir_if_not_exists()
     cache_dir = config.get('cache_dir')
-    _courses = courses_list
     with open(os.path.join(cache_dir, 'courses.pickle'), 'wb') as f:
         _log.info('Escrevendo cursos...')
         pickle.dump(courses_list, f)
-    _assignments = assignments_list
     with open(os.path.join(cache_dir, 'assignments.pickle'), 'wb') as f:
         _log.info('Escrevendo tarefas...')
         pickle.dump(assignments_list, f)
-    _quizzes = quizzes_list
     with open(os.path.join(cache_dir, 'quizzes.pickle'), 'wb') as f:
         _log.info('Escrevendo quizzes...')
         pickle.dump(quizzes_list, f)
 
+    _courses = courses_list
+    _assignments = assignments_list
+    _quizzes = quizzes_list
     _last_update = datetime.now()
+
     last_update_str = _last_update.strftime('%d/%m/%Y %H:%M:%S')
     with open(os.path.join(cache_dir, 'meta.json'), 'w') as f:
         _log.info('Escrevendo meta...')
