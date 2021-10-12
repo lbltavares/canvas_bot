@@ -32,6 +32,9 @@ def authorized_only(command_handler: Callable[..., None]) -> Callable[..., Any]:
         """ Decorator logic """
         update = kwargs.get('update') or args[0]
 
+        # Log message
+        _log.info(f"{update.effective_chat.id} - {update.effective_message.text}")
+
         # Reject unauthorized messages
         if update.callback_query:
             cchat_id = int(update.callback_query.message.chat.id)
@@ -40,7 +43,7 @@ def authorized_only(command_handler: Callable[..., None]) -> Callable[..., Any]:
 
         chat_id = int(config.get('telegram_chat_id'))
         if cchat_id != chat_id:
-            _log.info(
+            _log.warning(
                 'Rejected unauthorized message from: %s',
                 update.message.chat_id
             )
