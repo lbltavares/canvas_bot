@@ -13,3 +13,8 @@
 | /notificar on/off | Ativa ou desativa a notificação de próxima atividade          |
 | /automerge on/off | Ativa ou desativa o merge automático antes de cada tarefa     |
 
+
+TODO:
+- Adicionar outros formatos para o merge (alem de PDF)
+- Implementar a notificação automática
+- Implementar o merge automático
