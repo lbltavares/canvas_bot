@@ -4,13 +4,17 @@ services:
   app:
     container_name: canvas_bot
     build: .
-    env_file: .env
+    restart: on-failure
     volumes:
       - ./cache:/app/cache
       - ./logs:/app/logs
       - ./merges:/app/merges
+
+    env_file: .env
     # environment:
     #   - CANVAS_TOKEN=<Seu token do canvas>
     #   - TELEGRAM_TOKEN=<Seu token do telegram>
     #   - TELEGRAM_CHAT_ID=<Seu chat_id do telegram>
+
+    # O ambiente 'dev' desabilita a atualizacao automatica do cache
     #   - AMBIENTE=prod
