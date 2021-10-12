@@ -13,23 +13,3 @@
 | /notificar on/off | Ativa ou desativa a notificação de próxima atividade          |
 | /automerge on/off | Ativa ou desativa o merge automático antes de cada tarefa     |
 
-
-```
-course:
-    id: int
-    nome: str
-    tarefas: [tarefa]
-
-
-tarefa:
-    id: int
-    name: str
-    description: str
-    due_at: datetime
-    points_possible: int
-    url: str
-
-    question_count: int
-    published: bool
-```
-
