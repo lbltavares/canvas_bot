@@ -1,11 +1,9 @@
 from canvas import canvas
 from logger import LoggerFactory
 from threading import Timer
-import merger
 import telegram_bot
 import config
 import cache
-import util
 
 
 _log = LoggerFactory.get_default_logger(__name__, filename=config.get(
