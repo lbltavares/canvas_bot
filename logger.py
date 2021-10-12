@@ -3,7 +3,7 @@ import logging
 import os
 import config
 
-_LOGS_DIR = config.LogConfig.LOGS_DIR
+_LOGS_DIR = config.Log.LOGS_DIR
 
 
 class LoggerFactory:
@@ -13,8 +13,8 @@ class LoggerFactory:
         """
         Returns a logger with a rotating file handler.
         """
-        if config.LogConfig.UNIQUE_LOG_FILE:
-            filename = config.LogConfig.LOG_FILENAME
+        if config.Log.UNIQUE_LOG_FILE:
+            filename = config.Log.LOG_FILENAME
 
         logger = logging.getLogger(name)
 

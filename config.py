@@ -9,12 +9,12 @@ class BaseConfig:
     ENABLE = True
 
 
-class TelegramConfig(BaseConfig):
+class Telegram(BaseConfig):
     TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
     TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
 
-class CanvasConfig(BaseConfig):
+class Canvas(BaseConfig):
     CANVAS_URL = "https://pucminas.instructure.com"
     CANVAS_TOKEN = os.environ.get("CANVAS_TOKEN")
     IGNORAR_DISCIPLINAS = [
@@ -24,19 +24,19 @@ class CanvasConfig(BaseConfig):
     ]
 
 
-class LogConfig(BaseConfig):
+class Log(BaseConfig):
     UNIQUE_LOG_FILE = True
     LOGS_DIR = os.path.join(os.path.dirname(__file__), 'logs')
     LOG_FILENAME = 'app'  # .log
 
 
-class CacheConfig(BaseConfig):
+class Cache(BaseConfig):
     ENABLE = ambiente != 'dev'
     CACHE_DIR = os.path.join(os.path.dirname(__file__), 'cache')
     REFRESH_INTERVAL_S = 30
 
 
-class MergeConfig(BaseConfig):
+class Merger(BaseConfig):
     MERGE_DIR = os.path.join(os.path.dirname(__file__), 'merges')
     MERGE_MIME_CLASSES = ['pdf', 'doc']  # , 'image', 'ppt']
 
@@ -47,7 +47,7 @@ class MergeConfig(BaseConfig):
     CHECK_INTERVAL_M = 4
 
 
-class NotifConfig(BaseConfig):
+class Notif(BaseConfig):
     # Horas antes de cada tarefa
     HORAS_ANTECEDENCIA = 70
     # Intervalo de verificacao de necessidade de notificacao
@@ -56,13 +56,13 @@ class NotifConfig(BaseConfig):
     PROXIMAS_TAREFAS = 3
 
 
-class UtilConfig(BaseConfig):
+class Util(BaseConfig):
     pass
 
 
-class ApiConfig(BaseConfig):
+class Api(BaseConfig):
     pass
 
 
-class MainConfig(BaseConfig):
+class Main(BaseConfig):
     pass

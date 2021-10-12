@@ -7,7 +7,7 @@ from telegram_bot import get_bot, send_message
 from util import format_tarefa
 
 _log = LoggerFactory.get_default_logger(__name__)
-_log.setLevel(config.ApiConfig.LOG_LEVEL)
+_log.setLevel(config.Api.LOG_LEVEL)
 
 
 def calendario():
@@ -71,7 +71,7 @@ def set_notificar(val):
 
 
 def notificar():
-    if not config.NotifConfig.ENABLE:
+    if not config.Notif.ENABLE:
         _log.info('Pulando notificacao')
         return
     prox = proximas(limit=1)
@@ -83,7 +83,7 @@ def notificar():
     secs = (t.due_at_date - agora).total_seconds()
     m = secs / 60
     h = m / 60
-    if h < config.NotifConfig.HORAS_ANTECEDENCIA:
+    if h < config.Notif.HORAS_ANTECEDENCIA:
         _log.info("Notificando...")
         msg = "A seguinte tarefa está proxima:\n\n"
         msg += format_tarefa(t, c.name)
@@ -91,7 +91,7 @@ def notificar():
 
 
 def automerge():
-    if not config.MergeConfig.ENABLE:
+    if not config.Merger.ENABLE:
         _log.info('Pulando auto_merge')
         return
     prox = proximas(limit=1)
@@ -101,7 +101,7 @@ def automerge():
     agora = dt.now().astimezone()
     secs = (t.due_at_date - agora).total_seconds()
     mins = int(secs / 60)
-    if mins > config.MergeConfig.TEMPO_AUTO_MERGE:
+    if mins > config.Merger.TEMPO_AUTO_MERGE:
         return
 
     result = merge(

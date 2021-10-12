@@ -8,7 +8,7 @@ from logger import LoggerFactory
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 _log = LoggerFactory.get_default_logger(__name__)
-_log.setLevel(config.UtilConfig.LOG_LEVEL)
+_log.setLevel(config.Util.LOG_LEVEL)
 
 
 def format_tarefa(t, course_name=None):

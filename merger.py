@@ -9,9 +9,9 @@ from PyPDF2 import PdfFileMerger
 
 
 _log = LoggerFactory.get_default_logger(__name__)
-_log.setLevel(config.MergeConfig.LOG_LEVEL)
+_log.setLevel(config.Merger.LOG_LEVEL)
 
-MERGE_DIR = config.MergeConfig.MERGE_DIR
+MERGE_DIR = config.Merger.MERGE_DIR
 
 
 def get_course_dir(c: canvasapi.course.Course):
