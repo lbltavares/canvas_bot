@@ -72,25 +72,28 @@ def set_notificar(val):
 
 
 def notificar():
-    if not config.get('automerge'):
-        _log.info('Pulando automerge')
+    if not config.get('notificar'):
+        _log.info('Pulando notificacao')
         return
     prox = proximas(limit=1)
     if not prox or len(prox) == 0:
         return
+    _log.info("Verificando notificacao")
     c, t = prox[0]
-    agora = dt.now().astimezone()
+    agora = dt.now().replace(tzinfo=tz.utc)
     secs = (t.due_at_date - agora).total_seconds()
-    h = int(secs / 3600)
+    m = secs / 60
+    h = m / 60
     if h < config.get('tempo_notificacao', 15):
+        _log.info("Notificando...")
         msg = "A seguinte tarefa está proxima:\n\n"
         msg += format_tarefa(t, c.name)
         send_message(msg)
 
 
 def automerge():
-    if not config.get('notificar'):
-        _log.info('Pulando notificacao')
+    if not config.get('auto_merge'):
+        _log.info('Pulando auto_merge')
         return
     prox = proximas(limit=1)
     if not prox or len(prox) == 0:

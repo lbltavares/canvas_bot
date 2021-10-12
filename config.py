@@ -52,10 +52,10 @@ __conf = {
 
     # Notifica quando uma tarefa estiver proxima
     "notificar": True,
-    "tempo_notificacao": 15,  # Horas antes de cada tarefa
+    "tempo_notificacao": 60,  # Horas antes de cada tarefa
 
     # Intervalo de verificacao de necessidade de notificacao
-    "notificacao_interval_minutes": 10,
+    "notificacao_interval_minutes": 2,
 
 
     # Numero de tarefas a serem exibidas no comando /proximas
