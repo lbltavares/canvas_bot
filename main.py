@@ -1,39 +1,26 @@
 from api import automerge, notificar
-from cache import update
-from canvas import canvas
+from cache import atualizar
 from logger import LoggerFactory
 from threading import Timer
 import telegram_bot
 import config
 
 
-_log = LoggerFactory.get_default_logger(__name__, filename=config.get(
-    'log_filename', 'app.log') if config.get('unique_log_file') else None)
-_log.setLevel(config.get('main_log_level', 'INFO'))
+_log = LoggerFactory.get_default_logger(__name__)
+_log.setLevel(config.MainConfig.LOG_LEVEL)
 
 
-def agendar_cache_refresh():
-    _log.info('Agendando atualizacao do cache...')
-    secs = config.get('cache_refresh_interval_minutes', 15) * 60
-    Timer(secs, update).start()
-
-
-def agendar_notificacoes():
-    _log.info('Agendando notificacoes...')
-    secs = config.get('notificacao_interval_minutes', 15) * 60
-    Timer(secs, notificar).start()
-
-
-def agendar_automerges():
-    _log.info('Agendando automerge...')
-    secs = config.get('automerge_interval_minutes', 15) * 60
-    Timer(secs, automerge).start()
+def agendar(immediate=False, func=None, tempo=10):
+    if immediate and func:
+        func()
+    Timer(tempo, agendar, (True, func, tempo)).start()
 
 
 def main():
-    agendar_cache_refresh()
-    agendar_notificacoes()
-    agendar_automerges()
+    _log.info("Agendando tarefas...")
+    agendar(func=atualizar, tempo=config.CacheConfig.REFRESH_INTERVAL_S * 60)
+    agendar(func=notificar, tempo=config.NotifConfig.CHECK_INTERVAL_M * 60)
+    agendar(func=automerge, tempo=config.MergeConfig.CHECK_INTERVAL_M * 60)
     _log.info('Iniciado.')
     telegram_bot.init()
 
