@@ -20,7 +20,7 @@ def agendar_cache_refresh():
 
 def agendar_notificacoes():
     _log.info('Agendando notificacoes...')
-    secs = config.get('notificacoes_interval_minutes', 15) * 60
+    secs = config.get('notificacao_interval_minutes', 15) * 60
     Timer(secs, notificar).start()
 
 
