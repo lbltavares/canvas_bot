@@ -16,5 +16,5 @@
 
 TODO:
 - Adicionar outros formatos para o merge (alem de PDF)
-- Implementar a notificação automática
-- Implementar o merge automático
+- ~~Implementar a notificação automática~~
+- ~~Implementar o merge automático~~
