@@ -17,11 +17,11 @@ from logger import LoggerFactory
 # logger = logging.getLogger(__name__)
 
 _log = LoggerFactory.get_default_logger(__name__)
-_log.setLevel(config.TelegramConfig.LOG_LEVEL)
+_log.setLevel(config.Telegram.LOG_LEVEL)
 
 # Create the Updater and pass it your bot's token.
 _updater = Updater(
-    token=config.TelegramConfig.TELEGRAM_TOKEN, use_context=True)
+    token=config.Telegram.TELEGRAM_TOKEN, use_context=True)
 
 
 def get_bot():
@@ -30,7 +30,7 @@ def get_bot():
 
 def send_message(msg):
     bot = get_bot()
-    chat_id = int(config.TelegramConfig.TELEGRAM_CHAT_ID)
+    chat_id = int(config.Telegram.TELEGRAM_CHAT_ID)
     bot.send_message(chat_id=chat_id, text=msg)
 
 
@@ -57,7 +57,7 @@ def authorized_only(command_handler: Callable[..., None]) -> Callable[..., Any]:
         else:
             cchat_id = int(update.message.chat_id)
 
-        chat_id = int(config.TelegramConfig.TELEGRAM_CHAT_ID)
+        chat_id = int(config.Telegram.TELEGRAM_CHAT_ID)
         if cchat_id != chat_id:
             _log.warning(
                 'Rejected unauthorized message from: %s',
@@ -176,7 +176,7 @@ def pontos(update: Update, context: CallbackContext) -> None:
 
 @authorized_only
 def update(update: Update, context: CallbackContext) -> None:
-    if not config.CacheConfig.ENABLE:
+    if not config.Cache.ENABLE:
         update.message.reply_text('Cache refresh desabilitado')
         return
     update.message.reply_text("Atualizando cache...")
@@ -187,27 +187,17 @@ def update(update: Update, context: CallbackContext) -> None:
 
 @authorized_only
 def notificar(update: Update, context: CallbackContext) -> None:
-    config.NotifConfig.ENABLE = not config.NotifConfig.ENABLE
+    config.Notif.ENABLE = not config.Notif.ENABLE
     update.message.reply_text(
-        f"Notificações {'ativadas' if config.NotifConfig.ENABLE else 'desativadas'}"
+        f"Notificações {'ativadas' if config.Notif.ENABLE else 'desativadas'}"
     )
 
 
 @authorized_only
 def automerge(update: Update, context: CallbackContext) -> None:
-    config.MergeConfig.ENABLE = not config.MergeConfig.ENABLE
+    config.Merge.ENABLE = not config.Merge.ENABLE
     update.message.reply_text(
-        f"Automerge {'ativado' if config.MergeConfig.ENABLE else 'desativado'}"
-    )
-
-
-@authorized_only
-def start(update: Update, context: CallbackContext) -> None:
-    """Send a message when the command /start is issued."""
-    user = update.effective_user
-    update.message.reply_markdown_v2(
-        fr'Hi {user.mention_markdown_v2()}\!',
-        reply_markup=ForceReply(selective=True),
+        f"Automerge {'ativado' if config.Merge.ENABLE else 'desativado'}"
     )
 
 
@@ -218,8 +208,6 @@ def init() -> None:
     dispatcher = _updater.dispatcher
 
     # on different commands - answer in Telegram
-    dispatcher.add_handler(CommandHandler("start", start))
-
     dispatcher.add_handler(CommandHandler("calendario", calendario))
     dispatcher.add_handler(CommandHandler("proximas", proximas))
     dispatcher.add_handler(CommandHandler("all", get_all))

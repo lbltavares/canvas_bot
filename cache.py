@@ -102,7 +102,7 @@ def _deve_atualizar():
         return True
     # Tempo desde o ultimo update em minutos
     time_since_update = (datetime.now() - _last_update).seconds / 60
-    if time_since_update > config.Cache.REFRESH_INTERVAL_S:
+    if time_since_update > config.Cache.REFRESH_INTERVAL_M:
         return True
     return False
 

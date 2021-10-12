@@ -82,16 +82,16 @@ def notificar():
     agora = dt.now().replace(tzinfo=tz.utc)
     secs = (t.due_at_date - agora).total_seconds()
     m = secs / 60
-    h = m / 60
-    if h < config.Notif.HORAS_ANTECEDENCIA:
-        _log.info("Notificando...")
-        msg = "A seguinte tarefa está proxima:\n\n"
-        msg += format_tarefa(t, c.name)
-        send_message(msg)
+    if m > config.Notif.ANTECEDENCIA_M:
+        return
+    _log.info("Notificando...")
+    msg = "A seguinte tarefa está proxima:\n\n"
+    msg += format_tarefa(t, c.name)
+    send_message(msg)
 
 
 def automerge():
-    if not config.Merger.ENABLE:
+    if not config.Merge.ENABLE:
         _log.info('Pulando auto_merge')
         return
     prox = proximas(limit=1)
@@ -101,9 +101,8 @@ def automerge():
     agora = dt.now().astimezone()
     secs = (t.due_at_date - agora).total_seconds()
     mins = int(secs / 60)
-    if mins > config.Merger.TEMPO_AUTO_MERGE:
+    if mins > config.Merge.ANTECEDENCIA_M:
         return
-
     result = merge(
         c.id,
         start_download_cb=lambda c: send_message(

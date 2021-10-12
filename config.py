@@ -4,8 +4,8 @@ ambiente = os.environ.get('AMBIENTE') or 'dev'
 
 
 class BaseConfig:
-    LOG_LEVEL = 'INFO'
     DEBUG = False
+    LOG_LEVEL = 'DEBUG' if DEBUG else 'INFO'
     ENABLE = True
 
 
@@ -33,25 +33,27 @@ class Log(BaseConfig):
 class Cache(BaseConfig):
     ENABLE = ambiente != 'dev'
     CACHE_DIR = os.path.join(os.path.dirname(__file__), 'cache')
-    REFRESH_INTERVAL_S = 30
+    REFRESH_INTERVAL_M = 30  # minutos
 
 
-class Merger(BaseConfig):
+class Merge(BaseConfig):
     MERGE_DIR = os.path.join(os.path.dirname(__file__), 'merges')
     MERGE_MIME_CLASSES = ['pdf', 'doc']  # , 'image', 'ppt']
 
     # Tempo de antecedencia para o merge automatico
-    TEMPO_AUTO_MERGE = 10  # em minutos
+    ANTECEDENCIA_M = 10  # minutos
 
     # Intervalo de verificacao de necessidade de automerge
-    CHECK_INTERVAL_M = 4
+    CHECK_INTERVAL_M = 4  # minutos
 
 
 class Notif(BaseConfig):
     # Horas antes de cada tarefa
-    HORAS_ANTECEDENCIA = 70
+    ANTECEDENCIA_M = 70
+
     # Intervalo de verificacao de necessidade de notificacao
-    CHECK_INTERVAL_M = 2
+    CHECK_INTERVAL_M = 15
+
     # Numero de tarefas a serem exibidas no comando /proximas
     PROXIMAS_TAREFAS = 3
 
