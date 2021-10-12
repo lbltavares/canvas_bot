@@ -1,15 +1,25 @@
 import os
 
+ambiente = os.environ.get('AMBIENTE') or 'dev'
 
 __conf = {
     # Configuracoes de acesso
-    "canvas_token": os.environ.get("CANVAS_TOKEN", ""),
-    "telegram_token": os.environ.get("TELEGRAM_TOKEN", ""),
+    "canvas_url": "https://pucminas.instructure.com",
+    "canvas_token": os.environ.get("CANVAS_TOKEN"),
+    "telegram_token": os.environ.get("TELEGRAM_TOKEN"),
+    "telegram_chat_id": os.environ.get("TELEGRAM_CHAT_ID"),
 
     # Logs
+    'unique_log_file': True,
     'logs_dir': os.path.join(os.path.dirname(__file__), 'logs'),
+    'log_filename': 'app',  # .log
     'main_log_level': 'INFO',
     'cache_log_level': 'INFO',
+    'merger_log_level': 'INFO',
+    'canvas_log_level': 'INFO',
+    'telegram_bot_log_level': 'INFO',
+    'util_log_level': 'INFO',
+    'api_log_level': 'INFO',
 
     # Disciplinas a serem ignoradas
     "ignorar_disciplinas": [
@@ -19,16 +29,25 @@ __conf = {
     ],
 
     # Cache
-    'cache_refresh_interval_minutes': 15,  # Tempo em minutos entre updates
+    # Ativa ou desativa a atualizacao do cache
+    'enable_cache_refresh': ambiente != 'dev',
+
+    # Merge
+    'merge_dir': os.path.join(os.path.dirname(__file__), 'merges'),
+    'merge_mime_classes': ['pdf', 'image', 'ppt', 'doc'],
+    # Realiza o merge automatico de arquivos de cada tarefa
+    "auto_merge": True,
+    # Tempo de antecedencia para o merge automatico
+    "tempo_auto_merge": 10,  # em minutos
+
+    # Tempo em minutos entre refreshs do cache
+    'cache_refresh_interval_minutes': 30,
     'cache_dir': os.path.join(os.path.dirname(__file__), 'cache'),
 
     # Notifica quando uma tarefa estiver proxima
     "notificar": True,
     "tempo_notificacao": 15,  # Horas antes de cada tarefa
 
-    # Realiza o merge automatico de arquivos de cada tarefa
-    "merge": True,
-    "tempo_merge": 10,  # Minutos antes de cada tarefa
 
     # Numero de tarefas a serem exibidas no comando /proximas
     "proximas_tarefas": 3,

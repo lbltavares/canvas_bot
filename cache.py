@@ -5,18 +5,14 @@ import json
 import os
 from datetime import datetime
 from logger import LoggerFactory
-from canvasapi import Canvas
+from canvas import canvas
 import config
 import pickle
 
-_log = LoggerFactory.get_default_logger(__name__)
+_log = LoggerFactory.get_default_logger(__name__, filename=config.get(
+    'log_filename', 'app.log') if config.get('unique_log_file') else None)
 _log.setLevel(config.get('cache_log_level', 'INFO'))
 
-
-_canvas = Canvas(
-    base_url="https://pucminas.instructure.com",
-    access_token=config.get('canvas_token')
-)
 
 _last_update = None
 _assignments = None
@@ -24,10 +20,28 @@ _quizzes = None
 _courses = None
 
 
+def last_update_formatted():
+    return _last_update.strftime('%d/%m/%Y %H:%M:%S')
+
+
+def last_update():
+    """
+    Retorna data da ultima atualização do cache.
+    """
+    return _last_update
+
+
 def _update():
     global _last_update, _assignments, _quizzes, _courses
+    if not config.get('enable_cache_refresh', True):
+        _log.warning(f'Pulando atualizacao do cache')
+        if _last_update:
+            last = last_update_formatted()
+            _log.warning(f'Ultima atualizacao: {last}')
+        return
+
     _log.info('Atualizando cache...')
-    courses = _canvas.get_courses(enrollment_state='active')
+    courses = canvas.get_courses(enrollment_state='active')
 
     courses_list = []
     for c in courses:
@@ -108,22 +122,17 @@ def update():
     _update()
 
 
-def last_update():
-    """
-    Retorna data da ultima atualização do cache.
-    """
-    return _last_update
-
-
 def get_assignments(filter=None, as_dict=False) -> list:
     """
     Retorna lista de assignments.
     """
     if _deve_atualizar():
         _update()
+    ignorar = config.get('ignorar_disciplinas', [])
+    assignments = [a for a in _assignments if a.course_id not in ignorar]
     if as_dict:
-        return {a.id: a for a in _assignments if filter is None or filter(a)}
-    return [a for a in _assignments if filter is None or filter(a)]
+        return {a.id: a for a in assignments if filter is None or filter(a)}
+    return [a for a in assignments if filter is None or filter(a)]
 
 
 def get_quizzes(filter=None, as_dict=False) -> list:
@@ -132,9 +141,11 @@ def get_quizzes(filter=None, as_dict=False) -> list:
     """
     if _deve_atualizar():
         _update()
+    ignorar = config.get('ignorar_disciplinas', [])
+    quizzes = [q for q in _quizzes if q.course_id not in ignorar]
     if as_dict:
-        return {q.id: q for q in _quizzes if filter is None or filter(q)}
-    return [q for q in _quizzes if filter is None or filter(q)]
+        return {q.id: q for q in quizzes if filter is None or filter(q)}
+    return [q for q in quizzes if filter is None or filter(q)]
 
 
 def get_courses(filter=None, as_dict=False) -> list:
@@ -143,9 +154,11 @@ def get_courses(filter=None, as_dict=False) -> list:
     """
     if _deve_atualizar():
         _update()
+    ignorar = config.get('ignorar_disciplinas', [])
+    courses = [c for c in _courses if c.id not in ignorar]
     if as_dict:
-        return {c.id: c for c in _courses if filter is None or filter(c)}
-    return [c for c in _courses if filter is None or filter(c)]
+        return {c.id: c for c in courses if filter is None or filter(c)}
+    return [c for c in courses if filter is None or filter(c)]
 
 
 def init():
