@@ -9,9 +9,8 @@ from canvas import canvas
 import config
 import pickle
 
-_log = LoggerFactory.get_default_logger(__name__, filename=config.get(
-    'log_filename', 'app.log') if config.get('unique_log_file') else None)
-_log.setLevel(config.get('cache_log_level', 'INFO'))
+_log = LoggerFactory.get_default_logger(__name__)
+_log.setLevel(config.CacheConfig.LOG_LEVEL)
 
 
 _last_update = None
@@ -31,9 +30,9 @@ def last_update():
     return _last_update
 
 
-def _update():
+def _atualizar():
     global _last_update, _assignments, _quizzes, _courses
-    if not config.get('enable_cache_refresh', True):
+    if not config.CacheConfig.ENABLE:
         _log.warning(f'Pulando atualizacao do cache')
         if _last_update:
             last = last_update_formatted()
@@ -70,7 +69,7 @@ def _update():
 
     # Escreve os arquivos de cache
     _create_cache_dir_if_not_exists()
-    cache_dir = config.get('cache_dir')
+    cache_dir = config.CacheConfig.CACHE_DIR
     with open(os.path.join(cache_dir, 'courses.pickle'), 'wb') as f:
         _log.info('Escrevendo cursos...')
         pickle.dump(courses_list, f)
@@ -103,7 +102,7 @@ def _deve_atualizar():
         return True
     # Tempo desde o ultimo update em minutos
     time_since_update = (datetime.now() - _last_update).seconds / 60
-    if time_since_update > config.get('cache_refresh_interval_minutes', 60):
+    if time_since_update > config.CacheConfig.REFRESH_INTERVAL_S:
         return True
     return False
 
@@ -112,14 +111,14 @@ def _create_cache_dir_if_not_exists():
     """
     Cria diretório para cache caso não exista.
     """
-    os.makedirs(config.get('cache_dir'), exist_ok=True)
+    os.makedirs(config.CacheConfig.CACHE_DIR, exist_ok=True)
 
 
-def update():
+def atualizar():
     """
     Atualiza o cache.
     """
-    _update()
+    _atualizar()
 
 
 def get_assignments(filter=None, as_dict=False) -> list:
@@ -127,8 +126,8 @@ def get_assignments(filter=None, as_dict=False) -> list:
     Retorna lista de assignments.
     """
     if _deve_atualizar():
-        _update()
-    ignorar = config.get('ignorar_disciplinas', [])
+        _atualizar()
+    ignorar = config.CanvasConfig.IGNORAR_DISCIPLINAS
     assignments = [a for a in _assignments if a.course_id not in ignorar]
     if as_dict:
         return {a.id: a for a in assignments if filter is None or filter(a)}
@@ -140,8 +139,8 @@ def get_quizzes(filter=None, as_dict=False) -> list:
     Retorna lista de assignments.
     """
     if _deve_atualizar():
-        _update()
-    ignorar = config.get('ignorar_disciplinas', [])
+        _atualizar()
+    ignorar = config.CanvasConfig.IGNORAR_DISCIPLINAS
     quizzes = [q for q in _quizzes if q.course_id not in ignorar]
     if as_dict:
         return {q.id: q for q in quizzes if filter is None or filter(q)}
@@ -153,8 +152,8 @@ def get_courses(filter=None, as_dict=False) -> list:
     Retorna lista de assignments.
     """
     if _deve_atualizar():
-        _update()
-    ignorar = config.get('ignorar_disciplinas', [])
+        _atualizar()
+    ignorar = config.CanvasConfig.IGNORAR_DISCIPLINAS
     courses = [c for c in _courses if c.id not in ignorar]
     if as_dict:
         return {c.id: c for c in courses if filter is None or filter(c)}
@@ -163,9 +162,9 @@ def get_courses(filter=None, as_dict=False) -> list:
 
 def init():
     global _last_update, _assignments, _quizzes, _courses
-    cache_dir = config.get('cache_dir')
+    cache_dir = config.CacheConfig.CACHE_DIR
     if not os.path.exists(cache_dir):
-        _update()
+        _atualizar()
         return
     try:
         with open(os.path.join(cache_dir, 'courses.pickle'), 'rb') as f:
@@ -180,7 +179,7 @@ def init():
             _last_update = d
     except Exception as e:
         _log.error(f'Erro ao carregar cache: {e}')
-        _update()
+        _atualizar()
 
 
 init()
