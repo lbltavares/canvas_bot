@@ -38,7 +38,7 @@ class Cache(BaseConfig):
 
 class Merge(BaseConfig):
     MERGE_DIR = os.path.join(os.path.dirname(__file__), 'merges')
-    MERGE_MIME_CLASSES = ['pdf', 'doc']  # , 'image', 'ppt']
+    MIME_CLASS = ['pdf', 'doc']  # , 'image', 'ppt']
 
     # Tempo de antecedencia para o merge automatico
     ANTECEDENCIA_M = 10  # minutos

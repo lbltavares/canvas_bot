@@ -29,7 +29,7 @@ def download_files(c: canvasapi.course.Course):
     for f in files:
         fname = f.filename
         mime = f.mime_class
-        if mime not in config.MERGE_MIME_CLASSES:
+        if mime not in config.Merge.MIME_CLASS:
             _log.info(f'Pulando arquivo: {fname} (mime: {mime})')
             continue
         fsize = f.size

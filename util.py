@@ -1,7 +1,7 @@
 import re
 import locale
 import config
-from datetime import datetime as dt, timezone
+from datetime import datetime as dt
 
 from logger import LoggerFactory
 
@@ -51,6 +51,10 @@ def format_tarefa(t, course_name=None):
     if due_at:
         result += f"Prazo: {due_at}\n"
     if faltam != None and faltam >= 0:
+        if faltam <= 1:
+            result += '\U0001F534 '
+        elif faltam <= 2:
+            result += '\U0001F7E0 '
         result += f"Faltam: {faltam} dia(s)\n"
     if passou:
         result += f"Passou: {passou}\n"

@@ -4,8 +4,8 @@ import api
 import util
 import cache
 
-from telegram import Update, ForceReply
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, CallbackContext
 
 from logger import LoggerFactory
 
@@ -158,7 +158,7 @@ def merge(update: Update, context: CallbackContext) -> None:
                         else f
                         for f in files_merged]
         files_merged = '\n'.join(files_merged)
-        msg = "<pre>Arquivos que foram juntados:\n" + files_merged + "</pre>"
+        msg = "<pre>Arquivos do merge:\n" + files_merged + "</pre>"
         update.message.reply_html(msg)
         context.bot.send_document(
             chat_id=update.message.chat_id,
@@ -188,16 +188,24 @@ def update(update: Update, context: CallbackContext) -> None:
 @authorized_only
 def notificar(update: Update, context: CallbackContext) -> None:
     config.Notif.ENABLE = not config.Notif.ENABLE
+    enabled = config.Notif.ENABLE
+    symbol = '\U0001F7E2' if enabled else '\U0001F534'
     update.message.reply_text(
-        f"Notificações {'ativadas' if config.Notif.ENABLE else 'desativadas'}"
+        f"{symbol} Notificacoes {'ativadas' if enabled else 'desativadas'}\n" +
+        f"Notificacoes: {enabled}\n" +
+        f"Intervalo: {config.Notif.CHECK_INTERVAL_M}m\n"
     )
 
 
 @authorized_only
 def automerge(update: Update, context: CallbackContext) -> None:
     config.Merge.ENABLE = not config.Merge.ENABLE
+    enabled = config.Merge.ENABLE
+    symbol = '\U0001F7E2' if enabled else '\U0001F534'
     update.message.reply_text(
-        f"Automerge {'ativado' if config.Merge.ENABLE else 'desativado'}"
+        f"{symbol} Automerge {'ativado' if enabled else 'desativado'}\n"
+        f"Automerge: {enabled}\n" +
+        f"Intervalo: {config.Merge.CHECK_INTERVAL_M}m\n"
     )
 
 

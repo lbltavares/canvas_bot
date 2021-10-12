@@ -123,7 +123,7 @@ def automerge():
                         else f
                         for f in files_merged]
         files_merged = '\n'.join(files_merged)
-        msg = "Arquivos que foram juntados:\n" + files_merged
+        msg = "Arquivos do merge:\n" + files_merged
         send_message(msg)
         get_bot().send_document(
             chat_id=config.TELEGRAM_CHAT_ID,
