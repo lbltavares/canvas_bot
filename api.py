@@ -6,9 +6,8 @@ from logger import LoggerFactory
 from telegram_bot import get_bot, send_message
 from util import format_tarefa
 
-_log = LoggerFactory.get_default_logger(__name__, filename=config.get(
-    'log_filename', 'app.log') if config.get('unique_log_file') else None)
-_log.setLevel(config.get('api_log_level', 'INFO'))
+_log = LoggerFactory.get_default_logger(__name__)
+_log.setLevel(config.ApiConfig.LOG_LEVEL)
 
 
 def calendario():
@@ -72,7 +71,7 @@ def set_notificar(val):
 
 
 def notificar():
-    if not config.get('notificar'):
+    if not config.NotifConfig.ENABLE:
         _log.info('Pulando notificacao')
         return
     prox = proximas(limit=1)
@@ -84,7 +83,7 @@ def notificar():
     secs = (t.due_at_date - agora).total_seconds()
     m = secs / 60
     h = m / 60
-    if h < config.get('tempo_notificacao', 15):
+    if h < config.NotifConfig.HORAS_ANTECEDENCIA:
         _log.info("Notificando...")
         msg = "A seguinte tarefa está proxima:\n\n"
         msg += format_tarefa(t, c.name)
@@ -92,7 +91,7 @@ def notificar():
 
 
 def automerge():
-    if not config.get('auto_merge'):
+    if not config.MergeConfig.ENABLE:
         _log.info('Pulando auto_merge')
         return
     prox = proximas(limit=1)
@@ -102,7 +101,7 @@ def automerge():
     agora = dt.now().astimezone()
     secs = (t.due_at_date - agora).total_seconds()
     mins = int(secs / 60)
-    if mins > config.get('tempo_auto_merge', 10):
+    if mins > config.MergeConfig.TEMPO_AUTO_MERGE:
         return
 
     result = merge(
@@ -128,7 +127,7 @@ def automerge():
         msg = "Arquivos que foram juntados:\n" + files_merged
         send_message(msg)
         get_bot().send_document(
-            chat_id=config.get('telegram_chat_id'),
+            chat_id=config.TELEGRAM_CHAT_ID,
             document=open(fpath, 'rb'),
             filename=fname
         )

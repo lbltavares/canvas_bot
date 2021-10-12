@@ -8,11 +8,10 @@ from docx2pdf import convert
 from PyPDF2 import PdfFileMerger
 
 
-_log = LoggerFactory.get_default_logger(__name__, filename=config.get(
-    'log_filename', 'app.log') if config.get('unique_log_file') else None)
-_log.setLevel(config.get('merger_log_level', 'INFO'))
+_log = LoggerFactory.get_default_logger(__name__)
+_log.setLevel(config.MergeConfig.LOG_LEVEL)
 
-MERGE_DIR = config.get('merge_dir', os.path.join(os.getcwd(), 'merge'))
+MERGE_DIR = config.MergeConfig.MERGE_DIR
 
 
 def get_course_dir(c: canvasapi.course.Course):
@@ -30,7 +29,7 @@ def download_files(c: canvasapi.course.Course):
     for f in files:
         fname = f.filename
         mime = f.mime_class
-        if mime not in config.get('merge_mime_classes'):
+        if mime not in config.MERGE_MIME_CLASSES:
             _log.info(f'Pulando arquivo: {fname} (mime: {mime})')
             continue
         fsize = f.size

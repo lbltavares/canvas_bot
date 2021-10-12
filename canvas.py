@@ -3,11 +3,10 @@ from canvasapi import Canvas
 
 from logger import LoggerFactory
 
-_log = LoggerFactory.get_default_logger(__name__, filename=config.get(
-    'log_filename', 'app.log') if config.get('unique_log_file') else None)
-_log.setLevel(config.get('canvas_log_level', 'INFO'))
+_log = LoggerFactory.get_default_logger(__name__)
+_log.setLevel(config.CanvasConfig.LOG_LEVEL)
 
 canvas = Canvas(
-    base_url=config.get('canvas_url'),
-    access_token=config.get('canvas_token')
+    base_url=config.CanvasConfig.CANVAS_URL,
+    access_token=config.CanvasConfig.CANVAS_TOKEN
 )
