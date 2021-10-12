@@ -14,4 +14,3 @@ services:
     #   - TELEGRAM_TOKEN=<Seu token do telegram>
     #   - TELEGRAM_CHAT_ID=<Seu chat_id do telegram>
     #   - AMBIENTE=prod
-    #   - TZ=America/Sao_Paulo
