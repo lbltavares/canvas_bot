@@ -20,6 +20,19 @@ _log = LoggerFactory.get_default_logger(__name__, filename=config.get(
     'log_filename', 'app.log') if config.get('unique_log_file') else None)
 _log.setLevel(config.get('telegram_bot_log_level', 'INFO'))
 
+# Create the Updater and pass it your bot's token.
+_updater = Updater(token=config.get('telegram_token'), use_context=True)
+
+
+def get_bot():
+    return _updater.bot
+
+
+def send_message(msg):
+    bot = get_bot()
+    chat_id = int(config.get('telegram_chat_id'))
+    bot.send_message(chat_id=chat_id, text=msg)
+
 
 def authorized_only(command_handler: Callable[..., None]) -> Callable[..., Any]:
     """
@@ -33,7 +46,10 @@ def authorized_only(command_handler: Callable[..., None]) -> Callable[..., Any]:
         update = kwargs.get('update') or args[0]
 
         # Log message
-        _log.info(f"{update.effective_chat.id} - {update.effective_message.text}")
+        # Get username
+        username = update.effective_user.username
+        _log.info(
+            f"{username}::{update.effective_chat.id} - {update.effective_message.text}")
 
         # Reject unauthorized messages
         if update.callback_query:
@@ -62,13 +78,24 @@ def authorized_only(command_handler: Callable[..., None]) -> Callable[..., Any]:
     return wrapper
 
 
+@authorized_only
 def calendario(update: Update, context: CallbackContext) -> None:
     pass
 
 
+@authorized_only
 def proximas(update: Update, context: CallbackContext) -> None:
-    prox = api.proximas(3)
-    prox = [util.format_tarefa(p, c) for c, p in prox]
+    text = update.message.text
+    parts = text.split()
+    limit = 3
+    if len(parts) > 1:
+        try:
+            limit = max(min(int(parts[1]), 10), 1)
+        except Exception:
+            pass
+
+    prox = api.proximas(limit)
+    prox = [util.format_tarefa(p, c.name) for c, p in prox]
     prox = ('\n' + '-'*30 + '\n').join(prox)
     update.message.reply_html(f"<pre>\n{prox}\n</pre>")
 
@@ -76,7 +103,7 @@ def proximas(update: Update, context: CallbackContext) -> None:
 @authorized_only
 def get_all(update: Update, context: CallbackContext) -> None:
     prox = api.proximas()
-    prox = [util.format_tarefa(p, c) for c, p in prox]
+    prox = [util.format_tarefa(p, c.name) for c, p in prox]
     prox = ('\n' + '-'*30 + '\n').join(prox)
     update.message.reply_html(f"<pre>\n{prox}\n</pre>")
 
@@ -144,7 +171,6 @@ def merge(update: Update, context: CallbackContext) -> None:
 
 @authorized_only
 def pontos(update: Update, context: CallbackContext) -> None:
-
     pass
 
 
@@ -161,12 +187,18 @@ def update(update: Update, context: CallbackContext) -> None:
 
 @authorized_only
 def notificar(update: Update, context: CallbackContext) -> None:
-    pass
+    val = config.set('notificar', not config.get('notificar'))
+    update.message.reply_text(
+        f"Notificações {'ativadas' if val else 'desativadas'}"
+    )
 
 
 @authorized_only
 def automerge(update: Update, context: CallbackContext) -> None:
-    pass
+    val = config.set('auto_merge', not config.get('auto_merge'))
+    update.message.reply_text(
+        f"Automerge {'ativado' if val else 'desativado'}"
+    )
 
 
 @authorized_only
@@ -179,23 +211,14 @@ def start(update: Update, context: CallbackContext) -> None:
     )
 
 
-@authorized_only
-def help_command(update: Update, context: CallbackContext) -> None:
-    """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
-
-
 def init() -> None:
     """Start the bot."""
-    # Create the Updater and pass it your bot's token.
-    updater = Updater(token=config.get('telegram_token'), use_context=True)
 
     # Get the dispatcher to register handlers
-    dispatcher = updater.dispatcher
+    dispatcher = _updater.dispatcher
 
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help_command))
 
     filter = Filters.chat(config.get('telegram_chat_id'))
     dispatcher.add_handler(CommandHandler("calendario", calendario))
@@ -209,7 +232,7 @@ def init() -> None:
     dispatcher.add_handler(CommandHandler("automerge", automerge))
 
     # Start the Bot
-    updater.start_polling(
+    _updater.start_polling(
         bootstrap_retries=-1,
         timeout=30,
         read_latency=60,
@@ -219,4 +242,4 @@ def init() -> None:
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
+    _updater.idle()

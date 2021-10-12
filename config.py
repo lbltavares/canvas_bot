@@ -34,11 +34,17 @@ __conf = {
 
     # Merge
     'merge_dir': os.path.join(os.path.dirname(__file__), 'merges'),
-    'merge_mime_classes': ['pdf', 'image', 'ppt', 'doc'],
+    'merge_mime_classes': ['pdf', 'doc'],  # , 'image', 'ppt'],
+
     # Realiza o merge automatico de arquivos de cada tarefa
     "auto_merge": True,
+
     # Tempo de antecedencia para o merge automatico
     "tempo_auto_merge": 10,  # em minutos
+
+    # Intervalo de verificacao de necessidade de automerge
+    "automerge_interval_minutes": 4,
+
 
     # Tempo em minutos entre refreshs do cache
     'cache_refresh_interval_minutes': 30,
@@ -48,6 +54,9 @@ __conf = {
     "notificar": True,
     "tempo_notificacao": 15,  # Horas antes de cada tarefa
 
+    # Intervalo de verificacao de necessidade de notificacao
+    "notificacao_interval_minutes": 10,
+
 
     # Numero de tarefas a serem exibidas no comando /proximas
     "proximas_tarefas": 3,
@@ -56,8 +65,8 @@ __conf = {
 
 # Configuracoes que podem ser modificadas
 __setters = ["notificar",
+             "auto_merge",
              "tempo_noficiacao",
-             "merge",
              "tempo_merge",
              "proximas_tarefas",
              "ignorar_disciplinas"]
@@ -75,3 +84,4 @@ def set(name, value):
         __conf[name] = value
     else:
         raise NameError(f"{name} nao pode ser modificado(a)")
+    return value
