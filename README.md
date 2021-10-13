@@ -3,7 +3,7 @@
 
 | **Comando**       | **Descrição**                                                 |
 |-------------------|---------------------------------------------------------------|
-| /calendario       | Mostra o calendario de tarefas                                |
+| ~~/calendario~~       | ~~Mostra o calendario de tarefas~~ *                                |
 | /proximas         | Exibe as próximas tarefas                                     |
 | /all              | Exibe todas as futuras tarefas, ordenadas por data de entrega |
 | /courses          | Exibe uma lista de disciplinas e seus ids                     |
@@ -15,6 +15,7 @@
 
 
 TODO:
+- ~~Exibir o calendário~~
 - Adicionar outros formatos para o merge (alem de PDF)
+- Omitir as tarefas que já foram entregues
 - Exibir o sumário de notas
-- Exibir o calendário (ver se é necessário)
