@@ -15,6 +15,7 @@ services:
     #   - CANVAS_TOKEN=<Seu token do canvas>
     #   - TELEGRAM_TOKEN=<Seu token do telegram>
     #   - TELEGRAM_CHAT_ID=<Seu chat_id do telegram>
+    #   - AMBIENTE=prod
 
     # O ambiente 'dev' desabilita a atualizacao automatica do cache
-    #   - AMBIENTE=prod
+    #   - AMBIENTE=dev

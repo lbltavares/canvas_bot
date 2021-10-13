@@ -1,6 +1,6 @@
 import os
 
-ambiente = os.environ.get('AMBIENTE') or 'dev'
+ambiente = os.environ.get('AMBIENTE') or 'prod'
 
 
 class BaseConfig:
