@@ -12,6 +12,8 @@ class BaseConfig:
 class Telegram(BaseConfig):
     TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
     TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+    # Numero de tarefas a serem exibidas no comando /proximas
+    PROXIMAS_TAREFAS = 3
 
 
 class Canvas(BaseConfig):
@@ -40,22 +42,19 @@ class Merge(BaseConfig):
     MERGE_DIR = os.path.join(os.path.dirname(__file__), 'merges')
     MIME_CLASS = ['pdf', 'doc']  # , 'image', 'ppt']
 
-    # Tempo de antecedencia para o merge automatico
-    ANTECEDENCIA_M = 10  # minutos
+    # Minutos de antecedencia antes de cada tarefa para o merge automatico
+    ANTECEDENCIA_M = 50  # minutos
 
     # Intervalo de verificacao de necessidade de automerge
-    CHECK_INTERVAL_M = 4  # minutos
+    CHECK_INTERVAL_M = 30  # a cada 30 minutos
 
 
 class Notif(BaseConfig):
-    # Horas antes de cada tarefa
-    ANTECEDENCIA_M = 70
+    # Minutos de antecedencia antes de cada tarefa
+    ANTECEDENCIA_M = 20 * 60  # 20 horas
 
-    # Intervalo de verificacao de necessidade de notificacao
-    CHECK_INTERVAL_M = 15
-
-    # Numero de tarefas a serem exibidas no comando /proximas
-    PROXIMAS_TAREFAS = 3
+    # Intervalo de verificacao
+    CHECK_INTERVAL_M = 30  # a cada 30 minutos
 
 
 class Util(BaseConfig):

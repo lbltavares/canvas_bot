@@ -1,3 +1,5 @@
+from logging import Formatter
+from logging.handlers import RotatingFileHandler
 from typing import Any, Callable
 import config
 import api
@@ -9,19 +11,29 @@ from telegram.ext import Updater, CommandHandler, CallbackContext
 
 from logger import LoggerFactory
 
-# # Enable logging
-# logging.basicConfig(
-#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-# )
-
-# logger = logging.getLogger(__name__)
-
 _log = LoggerFactory.get_default_logger(__name__)
+
+# Escreve o log do telegram em um arquivo separado
+_fhandler = RotatingFileHandler(
+    filename=f'{config.Log.LOGS_DIR}/telegram.log',
+    maxBytes=1024 * 1024 * 10,  # 10MB
+    backupCount=2,
+    encoding='utf-8',
+    delay=True
+)
+_fhandler.setFormatter(Formatter(
+    '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    datefmt='%d/%m/%y %H:%M:%S'
+))
+_fhandler.setLevel(config.Log.LOG_LEVEL)
+_log.addHandler(_fhandler)
 _log.setLevel(config.Telegram.LOG_LEVEL)
 
 # Create the Updater and pass it your bot's token.
 _updater = Updater(
-    token=config.Telegram.TELEGRAM_TOKEN, use_context=True)
+    token=config.Telegram.TELEGRAM_TOKEN,
+    use_context=True
+)
 
 
 def get_bot():
@@ -87,7 +99,7 @@ def calendario(update: Update, context: CallbackContext) -> None:
 def proximas(update: Update, context: CallbackContext) -> None:
     text = update.message.text
     parts = text.split()
-    limit = 3
+    limit = config.Telegram.PROXIMAS_TAREFAS
     if len(parts) > 1:
         try:
             limit = max(min(int(parts[1]), 10), 1)
@@ -102,7 +114,7 @@ def proximas(update: Update, context: CallbackContext) -> None:
 
 @authorized_only
 def get_all(update: Update, context: CallbackContext) -> None:
-    prox = api.proximas()
+    prox = api.proximas(limit=15)
     prox = [util.format_tarefa(p, c.name) for c, p in prox]
     prox = ('\n' + '-'*30 + '\n').join(prox)
     update.message.reply_html(f"<pre>\n{prox}\n</pre>")

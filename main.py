@@ -19,7 +19,9 @@ def agendar(immediate=False, func=None, tempo=10):
 def main():
     _log.info("Agendando tarefas...")
     agendar(func=atualizar, tempo=config.Cache.REFRESH_INTERVAL_M * 60)
-    agendar(func=notificar, tempo=config.Notif.CHECK_INTERVAL_M * 60)
+    agendar(immediate=True,
+            func=notificar,
+            tempo=config.Notif.CHECK_INTERVAL_M * 60)
     agendar(func=automerge, tempo=config.Merge.CHECK_INTERVAL_M * 60)
     _log.info('Iniciado.')
     telegram_bot.init()
