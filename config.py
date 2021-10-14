@@ -46,7 +46,7 @@ class Merge(BaseConfig):
     ANTECEDENCIA_M = 50  # minutos
 
     # Intervalo de verificacao de necessidade de automerge
-    CHECK_INTERVAL_M = 5  # a cada 30 minutos
+    CHECK_INTERVAL_M = 5  #  minutos
 
 
 class Notif(BaseConfig):
@@ -54,7 +54,7 @@ class Notif(BaseConfig):
     ANTECEDENCIA_M = 20 * 60  # 20 horas
 
     # Intervalo de verificacao
-    CHECK_INTERVAL_M = 5  # a cada 30 minutos
+    CHECK_INTERVAL_M = 5  # minutos
 
 
 class Util(BaseConfig):

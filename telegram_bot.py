@@ -205,7 +205,8 @@ def notificar(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(
         f"{symbol} Notificacoes {'ativadas' if enabled else 'desativadas'}\n" +
         f"Notificacoes: {enabled}\n" +
-        f"Intervalo: {config.Notif.CHECK_INTERVAL_M}m\n"
+        f"Intervalo:    {config.Notif.CHECK_INTERVAL_M}m\n"
+        f"Antecedencia: {config.Notif.ANTECEDENCIA_M}m\n"
     )
 
 
@@ -216,8 +217,9 @@ def automerge(update: Update, context: CallbackContext) -> None:
     symbol = '\U0001F7E2' if enabled else '\U0001F534'
     update.message.reply_text(
         f"{symbol} Automerge {'ativado' if enabled else 'desativado'}\n"
-        f"Automerge: {enabled}\n" +
-        f"Intervalo: {config.Merge.CHECK_INTERVAL_M}m\n"
+        f"Automerge:    {enabled}\n" +
+        f"Intervalo:    {config.Merge.CHECK_INTERVAL_M}m\n"
+        f"Antecedencia: {config.Merge.ANTECEDENCIA_M}m\n"
     )
 
 
