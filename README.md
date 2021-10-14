@@ -18,8 +18,12 @@
 0. [Crie um token no Canvas](https://kb.iu.edu/d/aaja) (Conta -> Configurações -> Novo Token de Acesso)
 1. [Crie um bot do telegram](https://core.telegram.org/bots#3-how-do-i-create-a-bot), e [obtenha o seu chat_id](https://newbedev.com/how-to-obtain-telegram-chat-id-for-a-specific-user)
 2. ```git clone https://github.com/lbltavares/canvas_bot.git```
-3. Preencha o ```docker-compose.yml```
+3. Preencha o [```docker-compose.yml```](https://github.com/lbltavares/canvas_bot/blob/main/docker-compose.yml)
 4. ```docker-compose up -d```
+
+#### Configurações
+* Todas as configurações estão no arquivo [```config.py```](https://github.com/lbltavares/canvas_bot/blob/main/config.py)
+
 
 #### Pastas:
 - ```📂 logs``` - Um arquivo para os logs gerais (app.log), e um arquivo apenas para os logs do telegram (telegram.log)
