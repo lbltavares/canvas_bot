@@ -123,7 +123,7 @@ def atualizar():
 
 def get_assignments(filter=None, as_dict=False) -> list:
     """
-    Retorna lista de assignments.
+    Retorna lista de tarefas.
     """
     if _deve_atualizar():
         _atualizar()
@@ -136,7 +136,7 @@ def get_assignments(filter=None, as_dict=False) -> list:
 
 def get_quizzes(filter=None, as_dict=False) -> list:
     """
-    Retorna lista de assignments.
+    Retorna lista de testes.
     """
     if _deve_atualizar():
         _atualizar()
@@ -149,7 +149,7 @@ def get_quizzes(filter=None, as_dict=False) -> list:
 
 def get_courses(filter=None, as_dict=False) -> list:
     """
-    Retorna lista de assignments.
+    Retorna lista de cursos.
     """
     if _deve_atualizar():
         _atualizar()
