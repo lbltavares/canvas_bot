@@ -2,7 +2,7 @@ FROM python:3.8
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y locales locales-all
+RUN apt-get update && apt-get install -y locales locales-all libreoffice
 
 RUN sed -i '/pt_BR.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 ENV LANG pt_BR.UTF-8  

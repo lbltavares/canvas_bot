@@ -1,10 +1,11 @@
+from subprocess import PIPE, Popen
 import canvasapi
 import canvasapi.course
 import config
 import shutil
+from cache import get_course_dir
 import os
 from logger import LoggerFactory
-from docx2pdf import convert
 from PyPDF2 import PdfFileMerger
 
 
@@ -14,69 +15,79 @@ _log.setLevel(config.Merge.LOG_LEVEL)
 MERGE_DIR = config.Merge.MERGE_DIR
 
 
-def get_course_dir(c: canvasapi.course.Course):
-    cname = c.name.split('-')[0].strip().replace(' ', '_').title()
-    return os.path.join(MERGE_DIR, cname)
-
-
-def download_files(c: canvasapi.course.Course):
-    files = c.get_files()
-    files = [f for f in files]
-    subdir = get_course_dir(c)
-    if os.path.exists(subdir):
-        shutil.rmtree(subdir)
-    os.makedirs(subdir)
-    for f in files:
-        fname = f.filename
-        mime = f.mime_class
-        if mime not in config.Merge.MIME_CLASS:
-            _log.info(f'Pulando arquivo: {fname} (mime: {mime})')
-            continue
-        fsize = f.size
-        mb = fsize / 1024 / 1024
-        _log.info(f'Baixando arquivo: {fname} ({mb}mb)')
-        f.download(os.path.join(subdir, fname))
-        fpath = os.path.join(subdir, fname)
-        if mime == 'doc':
-            try:
-                convert_doc_file(fpath)
-            except Exception as e:
-                _log.error(f'Erro ao converter arquivo: {fpath}')
-                _log.error(e)
-    return files
-
-
-def convert_doc_file(fpath: str):
+def convert_to_pdf(course_dir: str):
     try:
-        _log.info(f'Convertendo arquivo: {fpath}')
-        convert(fpath, fpath + '.pdf')
+        _log.info(f'Convertendo arquivos de {course_dir}')
+        pdf_dir = os.path.join(course_dir, 'pdf')
+
+        # Recria o diretorio de pdfs
+        if os.path.exists(pdf_dir):
+            shutil.rmtree(pdf_dir)
+        os.makedirs(pdf_dir)
+
+        # Converte os arquivos
+        files = os.listdir(course_dir)
+        p = Popen(['libreoffice',
+                   '--headless',
+                   '--convert-to',
+                   'pdf', '--outdir', 'pdf', *files],
+                  cwd=course_dir,
+                  stdout=PIPE)
+        p.wait(timeout=120)
+
+        # Copia os arquivos pdf para o diretorio de pdfs
+        for f in os.listdir(course_dir):
+            if f.endswith('.pdf'):
+                shutil.copy(os.path.join(course_dir, f), pdf_dir)
+
     except Exception as e:
-        _log.error(f'Erro ao converter arquivo: {fpath}')
+        _log.error(f'Erro ao converter arquivos: {course_dir}')
         _log.error(e)
+
+    return os.listdir(pdf_dir) if os.path.exists(pdf_dir) else []
+
+
+def merge_dir(dir: str, dest_file: str) -> list:
+    merger = PdfFileMerger()
+    dir_files = os.listdir(dir)
+    for f in dir_files:
+        fpath = os.path.join(dir, f)
+        merger.append(fpath)
+
+    _log.info(f'Mergeando arquivos de {dir}')
+
+    if os.path.exists(dest_file):
+        os.remove(dest_file)
+
+    merger.write(dest_file)
+    merger.close()
+    return dir_files
 
 
 def merge(c: canvasapi.course.Course) -> str:
-    pdf_files = []
-    for f in os.listdir(get_course_dir(c)):
-        if f.endswith('.pdf'):
-            pdf_files.append(os.path.join(get_course_dir(c), f))
+    cname = c.name.split('-')[0].strip().replace(' ', '_').title()
+    course_dir = get_course_dir(c)
+    course_pdf_dir = os.path.join(course_dir, 'pdf')
+    out_file = os.path.join(course_dir, f'{cname}.pdf')
 
-    _log.info(f'Juntando arquivos: {[p.split("/")[-1] for p in pdf_files]}')
+    pdf_files = []
+    for f in os.listdir(course_pdf_dir):
+        pdf_files.append(os.path.join(course_dir, f))
+
+    _log.info(f'Mergeando {len(pdf_files)} arquivos:')
+
     merger = PdfFileMerger()
     for pdf in pdf_files:
         merger.append(pdf)
-    cname = c.name.split('-')[0].strip().replace(' ', '_').title()
-    out_dir = os.path.join(get_course_dir(c), f'{cname}.pdf')
-    if os.path.exists(out_dir):
-        os.remove(out_dir)
-    merger.write(out_dir)
+    # if os.path.exists(out_file):
+    #     os.remove(out_file)
+    merger.write(out_file)
     merger.close()
-    for pdf in pdf_files:
-        os.remove(pdf)
+
     return {
         'course': c.name,
-        'merge_path': out_dir,
-        'merge_filename': out_dir.split('/')[-1],
+        'merge_path': out_file,
+        'merge_filename': out_file.split('/')[-1],
         'total_files_merged': len(pdf_files),
         'files_merged': [p.split('/')[-1] for p in pdf_files]
     }

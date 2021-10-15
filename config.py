@@ -40,13 +40,12 @@ class Cache(BaseConfig):
 
 class Merge(BaseConfig):
     MERGE_DIR = os.path.join(os.path.dirname(__file__), 'merges')
-    MIME_CLASS = ['pdf', 'doc']  # , 'image', 'ppt']
 
     # Minutos de antecedencia antes de cada tarefa para o merge automatico
     ANTECEDENCIA_M = 50  # minutos
 
     # Intervalo de verificacao de necessidade de automerge
-    CHECK_INTERVAL_M = 5  #  minutos
+    CHECK_INTERVAL_M = 5  # minutos
 
 
 class Notif(BaseConfig):

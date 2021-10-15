@@ -1,4 +1,7 @@
+
+import os
 import cache
+from cache import get_course_dir
 from datetime import datetime as dt, timezone as tz
 import config
 import merger
@@ -45,21 +48,71 @@ def courses():
     return result
 
 
-def merge(course_id, start_download_cb=None, end_download_cb=None, start_merge_cb=None, end_merge_cb=None):
+def download_course_files(course_id):
+    course = cache.get_courses(as_dict=True)[course_id]
+    course_files = course.get_files()
+    course_dir = get_course_dir(course)
+    os.makedirs(course_dir, exist_ok=True)
+
+    baixados = []
+    for f in course_files:
+        try:
+            fname = f.filename
+            fpath = os.path.join(course_dir, fname)
+            fsize = f.size
+            if os.path.exists(fpath) and os.path.getsize(fpath) == fsize:
+                _log.info(
+                    f'Arquivo ja baixado: {fname}')
+                continue
+            _log.info(f'Baixando arquivo: {fname} ({fsize / 1024 / 1024}mb)')
+            f.download(fpath)
+            baixados.append(fpath)
+        except Exception as e:
+            _log.exception(f'Erro ao baixar arquivo: {fname}')
+
+    return baixados
+
+
+def convert_course_files_to_pdf(course_id):
+    course = cache.get_courses(as_dict=True)[course_id]
+    course_dir = merger.get_course_dir(course)
+    files = merger.convert_to_pdf(course_dir)
+    return files
+
+
+def merge_course_pdf_files(course_id):
+    course = cache.get_courses(as_dict=True)[course_id]
+    course_pdf_dir = merger.get_course_dir(course)
+    course_pdf_dir = os.path.join(course_pdf_dir, 'pdf')
+    cname = course.name.split('-')[0].strip().title()
+    cname = [c for c in cname if c.isalnum() or c in ['.', ' ']]
+    cname = ''.join(cname)
+    cname = cname.replace(' ', '_')
+    dest_file = os.path.join(course_pdf_dir, f'{cname}_merged.pdf')
+    files = merger.merge_dir(course_pdf_dir, dest_file)
+    return (dest_file, files)
+
+
+def merge(course_id, start_download_cb=None, end_download_cb=None,
+          start_conversion_cb=None, end_conversion_cb=None,
+          start_merge_cb=None, end_merge_cb=None):
 
     course = cache.get_courses(as_dict=True).get(course_id)
     if course is None:
         raise ValueError(f'ID nao encontrado: {course_id}')
 
+    course_dir = merger.get_course_dir(course)
     start_download_cb(course) if start_download_cb is not None else None
-
-    files = merger.download_files(course)
-
+    files = download_course_files(course_id)
     end_download_cb(course, files) if end_download_cb is not None else None
+
+    start_conversion_cb(course) if start_conversion_cb is not None else None
+    conv_files = merger.convert_to_pdf(course_dir)
+    end_conversion_cb(
+        course, conv_files) if end_conversion_cb is not None else None
+
     start_merge_cb(course) if start_merge_cb is not None else None
-
     result = merger.merge(course)
-
     end_merge_cb(course) if end_merge_cb is not None else None
 
     return result

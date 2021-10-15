@@ -1,7 +1,11 @@
+"""
+    Utilitarios
+"""
+
+from datetime import datetime as dt
 import re
 import locale
 import config
-from datetime import datetime as dt
 
 from logger import LoggerFactory
 
@@ -11,32 +15,33 @@ _log = LoggerFactory.get_default_logger(__name__)
 _log.setLevel(config.Util.LOG_LEVEL)
 
 
-def format_tarefa(t, course_name=None):
+def format_tarefa(tarefa, course_name=None):
+    """Retorna uma string formatada da tarefa"""
     # Course Name
     if course_name:
         course_name = course_name.split('-')[0].strip().title()
 
     # Nome
-    name = getattr(t, 'name', None)
-    name = getattr(t, 'title', name)
+    name = getattr(tarefa, 'name', None)
+    name = getattr(tarefa, 'title', name)
     if name:
         name = name.title().strip()
 
     # Datas
-    due_at = t.due_at
+    due_at = tarefa.due_at
     due_at_date = None
     faltam = None
     passou = None
     if due_at:
         # America/Sao_Paulo
-        due_at_date = t.due_at_date.astimezone()
+        due_at_date = tarefa.due_at_date.astimezone()
         agora = dt.now().astimezone()
         faltam = (due_at_date - agora).days
         passou = faltam < 0
         due_at = due_at_date.strftime('%a, %d %b %Y - %H:%M:%S')
 
     # Descricao
-    desc = parse_description(getattr(t, 'description', None))
+    desc = parse_description(getattr(tarefa, 'description', None))
     desc = desc[:50]+'...' if desc else None
 
     result = ""
@@ -44,13 +49,13 @@ def format_tarefa(t, course_name=None):
         result += f"{course_name}\n"
     if name:
         result += f"{name}\n"
-    if getattr(t, 'id', None):
-        result += f"{t.id}\n"
+    if getattr(tarefa, 'id', None):
+        result += f"{tarefa.id}\n"
     if desc:
         result += f"Desc: {desc}\n"
     if due_at:
         result += f"Prazo: {due_at}\n"
-    if faltam != None and faltam >= 0:
+    if faltam is not None and faltam >= 0:
         if faltam <= 1:
             result += '\U0001F534 '
         elif faltam <= 2:
@@ -58,20 +63,21 @@ def format_tarefa(t, course_name=None):
         result += f"Faltam: {faltam} dia(s)\n"
     if passou:
         result += f"Passou: {passou}\n"
-    if getattr(t, 'question_count', None):
-        result += f"Questoes: {t.question_count}\n"
-    if getattr(t, 'points_possible', None):
-        result += f"Pontos: {t.points_possible}\n"
-    if getattr(t, 'html_url', None):
-        result += f"{t.html_url}\n"
+    if getattr(tarefa, 'question_count', None):
+        result += f"Questoes: {tarefa.question_count}\n"
+    if getattr(tarefa, 'points_possible', None):
+        result += f"Pontos: {tarefa.points_possible}\n"
+    if getattr(tarefa, 'html_url', None):
+        result += f"{tarefa.html_url}\n"
 
     return result
 
 
-def parse_description(d):
-    if d:
-        d = re.sub(r'<[^>]*>', '', d)
-        d = re.sub(r'(&nbsp|&amp|&quot|&lt|&gt)', '', d)
-        d = re.sub(r'\s+', ' ', d)
-        d = re.sub(r'https?://[^\s]+', '', d)
-    return d
+def parse_description(description):
+    """Retorna a descricao sem tags de HTML, espaços repetidos e URL formatadas"""
+    if description:
+        description = re.sub(r'<[^>]*>', '', description)
+        description = re.sub(r'(&nbsp|&amp|&quot|&lt|&gt)', '', description)
+        description = re.sub(r'\s+', ' ', description)
+        description = re.sub(r'https?://[^\s]+', '', description)
+    return description

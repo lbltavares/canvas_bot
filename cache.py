@@ -4,6 +4,8 @@ Cache de disciplinas e tarefas.
 import json
 import os
 from datetime import datetime
+
+import canvasapi
 from logger import LoggerFactory
 from canvas import canvas
 import config
@@ -119,6 +121,11 @@ def atualizar():
     Atualiza o cache.
     """
     _atualizar()
+
+
+def get_course_dir(c: canvasapi.course.Course) -> str:
+    cname = c.name.split('-')[0].strip().replace(' ', '_').title()
+    return os.path.join(config.Merge.MERGE_DIR, cname)
 
 
 def get_assignments(filter=None, as_dict=False) -> list:

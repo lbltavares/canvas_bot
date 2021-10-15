@@ -1,5 +1,6 @@
 from logging import Formatter
 from logging.handlers import RotatingFileHandler
+import os
 from typing import Any, Callable
 import config
 import api
@@ -150,31 +151,22 @@ def merge(update: Update, context: CallbackContext) -> None:
         update.message.reply_text("O course_id precisa ser um numero")
         return
 
-    result = api.merge(
-        course_id,
-        start_download_cb=lambda c: update.message.reply_text(
-            f'Baixando arquivos de: {c.name.split("-")[0].title()}'),
-        end_download_cb=lambda c, f: update.message.reply_text(
-            f'Download concluido. Total: {len(f)} arquivos.'),
-        start_merge_cb=lambda c: update.message.reply_text(
-            f'Iniciando o merge...'),
-        end_merge_cb=lambda c: update.message.reply_text(
-            f'Merge finalizado com sucesso.'))
+    update.message.reply_text("Baixando e convertendo arquivos do curso...")
+    api.download_course_files(course_id)
+    api.convert_course_files_to_pdf(course_id)
+    update.message.reply_text("Executando o merge dos arquivos...")
+    dest_file, files = api.merge_course_pdf_files(course_id)
 
     try:
-        fpath = result['merge_path']
-        fname = result['merge_filename']
-        files_merged = result['files_merged']
-        files_merged = [f[:45] + '...' + f[-5:]
-                        if len(f) > 50
-                        else f
-                        for f in files_merged]
+        fname = os.path.basename(dest_file)
+        files_merged = [f[:45] + '...pdf' if len(f) > 45 else f for f in files]
         files_merged = '\n'.join(files_merged)
-        msg = "<pre>Arquivos do merge:\n" + files_merged + "</pre>"
+        msg = f"Merge concluido. Total: {len(files)} arquivos:\n\n"
+        msg += f"<pre>{files_merged}</pre>"
         update.message.reply_html(msg)
         context.bot.send_document(
             chat_id=update.message.chat_id,
-            document=open(fpath, 'rb'),
+            document=open(dest_file, 'rb'),
             filename=fname
         )
     except Exception as e:
