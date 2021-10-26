@@ -1,17 +1,16 @@
 
 ## Comandos
 
-| **Comando**       | **Descrição**                                                 |
-|-------------------|---------------------------------------------------------------|
-| ~~/calendario~~       | ~~Mostra o calendario de tarefas~~ *                                |
-| /proximas         | Exibe as próximas tarefas                                     |
-| /all              | Exibe todas as futuras tarefas, ordenadas por data de entrega |
-| /courses          | Exibe uma lista de disciplinas e seus ids                     |
-| /merge 123        | Retorna o merge em PDF da disciplina com id=123               |
-| /pontos           | Retorna um sumário com a pontuação em cada disciplina         |
-| /update           | Atualiza o cache manualmente                                  |
-| /notificar on/off | Ativa ou desativa a notificação de próxima atividade          |
-| /automerge on/off | Ativa ou desativa o merge automático antes de cada tarefa     |
+| **Comando**       | **Descrição**                                                 | **Status**
+|-------------------|---------------------------------------------------------------|------------
+| /proximas [1-15]         | Exibe as próximas [1-15] tarefas                       | OK
+| /all              | Exibe todas as futuras tarefas, ordenadas por data de entrega | OK
+| /courses          | Exibe uma lista de disciplinas e seus ids                     | OK
+| /merge [id]        | Retorna o merge em PDF de uma disciplina específica          | OK
+| /pontos           | Retorna um sumário com a pontuação em cada disciplina*        | Não implementado
+| /update           | Atualiza o cache manualmente                                  | OK
+| /notificar on/off | Ativa ou desativa a notificação de próxima atividade          | OK
+| /automerge on/off | Ativa ou desativa o merge automático antes de cada tarefa     | OK
 
 ## Instruções
 
@@ -38,7 +37,6 @@
 
 
 ## TODO
-- ~~Exibir o calendário~~
+- Exibir o sumário de notas*
 - Adicionar outros formatos para o merge (alem de PDF)
 - Omitir as tarefas que já foram entregues
-- Exibir o sumário de notas
